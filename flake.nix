@@ -65,9 +65,9 @@
           processes.phoenix.exec = "mix phx.server";
 
           enterShell = ''
-            mkdir -p $DEVENV_ROOT/.nix-mix $DEVENV_ROOT/.nix-hex
-            export MIX_HOME=$DEVENV_ROOT/.nix-mix
-            export HEX_HOME=$DEVENV_ROOT/.nix-hex
+            mkdir -p "''${DEVENV_ROOT:-.}/.nix-mix" "''${DEVENV_ROOT:-.}/.nix-hex"
+            export MIX_HOME="''${DEVENV_ROOT:-.}/.nix-mix"
+            export HEX_HOME="''${DEVENV_ROOT:-.}/.nix-hex"
             # make hex from Nixpkgs available
             # `mix local.hex` will install hex into MIX_HOME and should take precedence
             export PATH=$MIX_HOME/bin:$HEX_HOME/bin:$PATH
