@@ -50,7 +50,10 @@
           ];
 
           # https://devenv.sh/reference/options/
-          packages = [ config.packages.default ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.inotify-tools ];
+          packages = [ 
+            config.packages.default
+            pkgs.elixir-ls
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.inotify-tools ];
 
           languages.elixir.enable = true;
 
