@@ -1,0 +1,27 @@
+<.header>
+  Drink '{@drink.name}'
+  <:subtitle>This is a drink record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/admin/drinks/#{@drink}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit drink</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@drink.name}</:item>
+  <:item title="Abv">{@drink.abv}%</:item>
+</.list>
+
+<.back navigate={~p"/admin/drinks"}>Back to drinks</.back>
+
+<.modal :if={@live_action == :edit} id="drink-modal" show on_cancel={JS.patch(~p"/admin/drinks/#{@drink}")}>
+  <.live_component
+    module={PintelierWeb.DrinkLive.FormComponent}
+    id={@drink.id}
+    title={@page_title}
+    action={@live_action}
+    drink={@drink}
+    patch={~p"/admin/drinks/#{@drink}"}
+  />
+</.modal>

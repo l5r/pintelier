@@ -82,4 +82,16 @@ defmodule PintelierWeb.Router do
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
   end
+
+  scope "/admin", PintelierWeb do
+    # TODO: authorization!
+    pipe_through [:browser]
+
+    live "/drinks", DrinkLive.Index, :index
+    live "/drinks/new", DrinkLive.Index, :new
+    live "/drinks/:id/edit", DrinkLive.Index, :edit
+
+    live "/drinks/:id", DrinkLive.Show, :show
+    live "/drinks/:id/show/edit", DrinkLive.Show, :edit
+  end
 end

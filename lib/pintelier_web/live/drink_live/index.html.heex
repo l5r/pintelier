@@ -1,0 +1,42 @@
+<.header>
+  Listing Drinks
+  <:actions>
+    <.link patch={~p"/admin/drinks/new"}>
+      <.button>New Drink</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="drinks"
+  rows={@streams.drinks}
+  row_click={fn {_id, drink} -> JS.navigate(~p"/admin/drinks/#{drink}") end}
+>
+  <:col :let={{_id, drink}} label="Name">{drink.name}</:col>
+  <:col :let={{_id, drink}} label="ABV">{drink.abv}%</:col>
+  <:action :let={{_id, drink}}>
+    <div class="sr-only">
+      <.link navigate={~p"/admin/drinks/#{drink}"}>Show</.link>
+    </div>
+    <.link patch={~p"/admin/drinks/#{drink}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, drink}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: drink.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="drink-modal" show on_cancel={JS.patch(~p"/admin/drinks")}>
+  <.live_component
+    module={PintelierWeb.DrinkLive.FormComponent}
+    id={@drink.id || :new}
+    title={@page_title}
+    action={@live_action}
+    drink={@drink}
+    patch={~p"/admin/drinks"}
+  />
+</.modal>
