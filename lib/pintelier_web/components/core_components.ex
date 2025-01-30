@@ -276,7 +276,7 @@ defmodule PintelierWeb.CoreComponents do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file month number password
-               range search select tel text textarea time url week)
+               range search select setter_button tel text textarea time url week)
 
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
@@ -286,6 +286,7 @@ defmodule PintelierWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :target_value, :any, default: "", doc: "the target value for the setter button"
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -325,6 +326,35 @@ defmodule PintelierWeb.CoreComponents do
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
+    """
+  end
+
+  def input(%{type: "setter_button"} = assigns) do
+    assigns = assigns
+      |> assign(target_input: "##{assigns.id}")
+
+    # TODO: @value sometimes contains a string even when it should be an integer
+    # Open a form with a value already set and then switch away and back
+
+    ~H"""
+    <button
+      type="button"
+      phx-click={
+        JS.set_attribute({"value", @target_value}, to: @target_input)
+        |> JS.concat(JS.dispatch("input", to: @target_input))
+      }
+      class={[
+        "rounded-lg py-2 px-3 text-sm font-semibold border-4 border-solid border-zinc-900",
+        @value != @target_value && "bg-zinc-100 hover:bg-zinc-200",
+        @value == @target_value && "bg-zinc-900 hover:bg-zinc-700 text-white"
+      ]}
+      value={@target_value}
+      name={@name}
+      data-cur-value={inspect(@value)}
+      {@rest}
+    >
+      {@label}
+    </button>
     """
   end
 

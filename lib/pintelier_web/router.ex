@@ -23,6 +23,34 @@ defmodule PintelierWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/", PintelierWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :authenticated,
+      on_mount: [{PintelierWeb.UserAuth, :ensure_authenticated}] do
+      live "/consumptions", ConsumptionLive.Index, :index
+      live "/consumptions/new", ConsumptionLive.Index, :new
+      live "/consumptions/:id/edit", ConsumptionLive.Index, :edit
+
+      live "/consumptions/:id", ConsumptionLive.Show, :show
+      live "/consumptions/:id/show/edit", ConsumptionLive.Show, :edit
+    end
+  end
+
+  ## Admin routes
+
+  scope "/admin", PintelierWeb do
+    # TODO: authorization!
+    pipe_through [:browser]
+
+    live "/drinks", DrinkLive.Index, :index
+    live "/drinks/new", DrinkLive.Index, :new
+    live "/drinks/:id/edit", DrinkLive.Index, :edit
+
+    live "/drinks/:id", DrinkLive.Show, :show
+    live "/drinks/:id/show/edit", DrinkLive.Show, :edit
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", PintelierWeb do
   #   pipe_through :api
@@ -83,15 +111,4 @@ defmodule PintelierWeb.Router do
     end
   end
 
-  scope "/admin", PintelierWeb do
-    # TODO: authorization!
-    pipe_through [:browser]
-
-    live "/drinks", DrinkLive.Index, :index
-    live "/drinks/new", DrinkLive.Index, :new
-    live "/drinks/:id/edit", DrinkLive.Index, :edit
-
-    live "/drinks/:id", DrinkLive.Show, :show
-    live "/drinks/:id/show/edit", DrinkLive.Show, :edit
-  end
 end

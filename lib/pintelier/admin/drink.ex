@@ -8,6 +8,8 @@ defmodule Pintelier.Admin.Drink do
     field :abv, :decimal
     field :name, :string
 
+    has_many :consumptions, Pintelier.Drinking.Consumption
+
     timestamps(type: :utc_datetime)
   end
 

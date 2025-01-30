@@ -1,0 +1,43 @@
+<.header>
+  Listing Consumptions
+  <:actions>
+    <.link patch={~p"/consumptions/new"}>
+      <.button>New Consumption</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="consumptions"
+  rows={@streams.consumptions}
+  row_click={fn {_id, consumption} -> JS.navigate(~p"/consumptions/#{consumption}") end}
+>
+  <:col :let={{_id, consumption}} label="Volume cl">{consumption.volume_cl}</:col>
+  <:col :let={{_id, consumption}} label="Name">{consumption.name}</:col>
+  <:col :let={{_id, consumption}} label="Abv">{consumption.abv}</:col>
+  <:action :let={{_id, consumption}}>
+    <div class="sr-only">
+      <.link navigate={~p"/consumptions/#{consumption}"}>Show</.link>
+    </div>
+    <.link patch={~p"/consumptions/#{consumption}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, consumption}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: consumption.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="consumption-modal" show on_cancel={JS.patch(~p"/consumptions")}>
+  <.live_component
+    module={PintelierWeb.ConsumptionLive.FormComponent}
+    id={@consumption.id || :new}
+    title={@page_title}
+    action={@live_action}
+    consumption={@consumption}
+    patch={~p"/consumptions"}
+  />
+</.modal>

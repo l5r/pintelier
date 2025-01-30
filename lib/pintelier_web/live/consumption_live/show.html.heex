@@ -1,0 +1,28 @@
+<.header>
+  Consumption {@consumption.id}
+  <:subtitle>This is a consumption record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/consumptions/#{@consumption}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit consumption</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Volume cl">{@consumption.volume_cl}</:item>
+  <:item title="Name">{@consumption.name}</:item>
+  <:item title="Abv">{@consumption.abv}</:item>
+</.list>
+
+<.back navigate={~p"/consumptions"}>Back to consumptions</.back>
+
+<.modal :if={@live_action == :edit} id="consumption-modal" show on_cancel={JS.patch(~p"/consumptions/#{@consumption}")}>
+  <.live_component
+    module={PintelierWeb.ConsumptionLive.FormComponent}
+    id={@consumption.id}
+    title={@page_title}
+    action={@live_action}
+    consumption={@consumption}
+    patch={~p"/consumptions/#{@consumption}"}
+  />
+</.modal>
