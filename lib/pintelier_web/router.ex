@@ -41,14 +41,17 @@ defmodule PintelierWeb.Router do
 
   scope "/admin", PintelierWeb do
     # TODO: authorization!
-    pipe_through [:browser]
+    pipe_through [:browser, :require_admin_user]
 
-    live "/drinks", DrinkLive.Index, :index
-    live "/drinks/new", DrinkLive.Index, :new
-    live "/drinks/:id/edit", DrinkLive.Index, :edit
+    live_session :require_admin_user,
+      on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user}] do
+      live "/drinks", DrinkLive.Index, :index
+      live "/drinks/new", DrinkLive.Index, :new
+      live "/drinks/:id/edit", DrinkLive.Index, :edit
 
-    live "/drinks/:id", DrinkLive.Show, :show
-    live "/drinks/:id/show/edit", DrinkLive.Show, :edit
+      live "/drinks/:id", DrinkLive.Show, :show
+      live "/drinks/:id/show/edit", DrinkLive.Show, :edit
+    end
   end
 
   # Other scopes may use custom stacks.

@@ -9,6 +9,7 @@ defmodule Pintelier.Accounts.User do
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+    field :is_admin, :boolean
 
     timestamps(type: :utc_datetime)
   end
@@ -41,6 +42,11 @@ defmodule Pintelier.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email(opts)
     |> validate_password(opts)
+  end
+
+  def set_admin_changeset(user, is_admin \\ true) do
+    user
+      |> change(is_admin: is_admin)
   end
 
   defp validate_email(changeset, opts) do

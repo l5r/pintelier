@@ -174,6 +174,25 @@ defmodule PintelierWeb.UserAuth do
     end
   end
 
+  def on_mount(:ensure_admin_user, params, session, socket) do
+    socket = mount_current_user(socket, session)
+
+    case on_mount(:ensure_authenticated, params, session, socket) do
+      {:cont, socket} ->
+        if Accounts.user_is_admin?(socket.assigns.current_user) do
+          {:cont, socket}
+        else
+          {:halt,
+           socket
+           |> Phoenix.LiveView.put_flash(:error, "Unauthorized")
+           |> Phoenix.LiveView.redirect(to: ~p"/")}
+        end
+
+      res ->
+        res
+    end
+  end
+
   defp mount_current_user(socket, session) do
     Phoenix.Component.assign_new(socket, :current_user, fn ->
       if user_token = session["user_token"] do
@@ -210,6 +229,22 @@ defmodule PintelierWeb.UserAuth do
       |> maybe_store_return_to()
       |> redirect(to: ~p"/users/log_in")
       |> halt()
+    end
+  end
+
+  def require_admin_user(conn, opts) do
+    if conn.assigns[:current_user] do
+      if Accounts.user_is_admin?(conn.assigns[:current_user]) do
+        conn
+      else
+        conn
+        |> put_flash(:error, "Unauthorized!")
+        |> put_status(:unauthorized)
+        |> redirect(to: ~p"/")
+        |> halt()
+      end
+    else
+      require_authenticated_user(conn, opts)
     end
   end
 

@@ -80,6 +80,12 @@ defmodule Pintelier.Accounts do
     |> Repo.insert()
   end
 
+  def make_admin(user) do
+    user
+    |> User.set_admin_changeset()
+    |> Repo.insert_or_update()
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
@@ -349,5 +355,9 @@ defmodule Pintelier.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def user_is_admin?(user) do
+  	user.is_admin
   end
 end
