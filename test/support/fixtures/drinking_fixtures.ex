@@ -19,4 +19,18 @@ defmodule Pintelier.DrinkingFixtures do
 
     consumption
   end
+
+  @doc """
+  Generate a consumption_session.
+  """
+  def consumption_session_fixture(attrs \\ %{}) do
+    {:ok, consumption_session} =
+      attrs
+      |> Enum.into(%{
+        last_consumption: ~U[2025-02-13 17:37:00Z]
+      })
+      |> Pintelier.Drinking.create_consumption_session()
+
+    consumption_session
+  end
 end

@@ -15,6 +15,7 @@ defmodule Pintelier.Drinking.Consumption do
 
     belongs_to :user, Pintelier.Accounts.User, type: :binary_id
     belongs_to :drink, Pintelier.Admin.Drink, type: :binary_id
+    belongs_to :consumption_session, Pintelier.Drinking.ConsumptionSession, type: :binary_id
 
     timestamps(type: :utc_datetime)
   end
@@ -32,6 +33,12 @@ defmodule Pintelier.Drinking.Consumption do
     consumption
     # TODO: check if there is a way to disallow paths with live uploads
     |> cast_attachments(attrs, [:image], allow_paths: true)
+  end
+ 
+  def session_changeset(consumption, attrs) do
+    consumption
+    |> cast(attrs, [:consumption_session_id])
+    |> foreign_key_constraint(:consumption_session_id)
   end
 
   def delete_image(consumption) do

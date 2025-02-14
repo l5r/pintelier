@@ -60,4 +60,58 @@ defmodule Pintelier.DrinkingTest do
       assert %Ecto.Changeset{} = Drinking.change_consumption(consumption)
     end
   end
+
+  describe "consumption_sessions" do
+    alias Pintelier.Drinking.ConsumptionSession
+
+    import Pintelier.DrinkingFixtures
+
+    @invalid_attrs %{last_consumption: nil}
+
+    test "list_consumption_sessions/0 returns all consumption_sessions" do
+      consumption_session = consumption_session_fixture()
+      assert Drinking.list_consumption_sessions() == [consumption_session]
+    end
+
+    test "get_consumption_session!/1 returns the consumption_session with given id" do
+      consumption_session = consumption_session_fixture()
+      assert Drinking.get_consumption_session!(consumption_session.id) == consumption_session
+    end
+
+    test "create_consumption_session/1 with valid data creates a consumption_session" do
+      valid_attrs = %{last_consumption: ~U[2025-02-13 17:37:00Z]}
+
+      assert {:ok, %ConsumptionSession{} = consumption_session} = Drinking.create_consumption_session(valid_attrs)
+      assert consumption_session.last_consumption == ~U[2025-02-13 17:37:00Z]
+    end
+
+    test "create_consumption_session/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Drinking.create_consumption_session(@invalid_attrs)
+    end
+
+    test "update_consumption_session/2 with valid data updates the consumption_session" do
+      consumption_session = consumption_session_fixture()
+      update_attrs = %{last_consumption: ~U[2025-02-14 17:37:00Z]}
+
+      assert {:ok, %ConsumptionSession{} = consumption_session} = Drinking.update_consumption_session(consumption_session, update_attrs)
+      assert consumption_session.last_consumption == ~U[2025-02-14 17:37:00Z]
+    end
+
+    test "update_consumption_session/2 with invalid data returns error changeset" do
+      consumption_session = consumption_session_fixture()
+      assert {:error, %Ecto.Changeset{}} = Drinking.update_consumption_session(consumption_session, @invalid_attrs)
+      assert consumption_session == Drinking.get_consumption_session!(consumption_session.id)
+    end
+
+    test "delete_consumption_session/1 deletes the consumption_session" do
+      consumption_session = consumption_session_fixture()
+      assert {:ok, %ConsumptionSession{}} = Drinking.delete_consumption_session(consumption_session)
+      assert_raise Ecto.NoResultsError, fn -> Drinking.get_consumption_session!(consumption_session.id) end
+    end
+
+    test "change_consumption_session/1 returns a consumption_session changeset" do
+      consumption_session = consumption_session_fixture()
+      assert %Ecto.Changeset{} = Drinking.change_consumption_session(consumption_session)
+    end
+  end
 end

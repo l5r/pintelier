@@ -35,7 +35,7 @@ defmodule PintelierWeb.ConsumptionLive.Index do
 
   @impl true
   def handle_info({PintelierWeb.ConsumptionLive.FormComponent, {:saved, consumption}}, socket) do
-    {:noreply, stream_insert(socket, :consumptions, consumption)}
+    {:noreply, stream_insert(socket, :consumptions, Pintelier.Repo.preload(consumption, :user))}
   end
 
   @impl true

@@ -4,6 +4,8 @@ defmodule Pintelier.Drinking do
   """
 
   import Ecto.Query, warn: false
+  alias Pintelier.Drinking
+  alias Pintelier.Drinking.ConsumptionSession
   alias Pintelier.Repo
 
   alias Pintelier.Drinking.Consumption
@@ -62,9 +64,41 @@ defmodule Pintelier.Drinking do
     )
     |> Repo.transaction()
     |> case do
-      {:ok, %{consumption_with_image: consumption}} -> {:ok, IO.inspect(consumption)}
+      {:ok, %{consumption_with_image: consumption}} -> update_consumption_session(consumption)
       {:error, _, changeset, _} -> {:error, changeset}
     end
+  end
+
+  defp update_consumption_session(consumption) do
+    Ecto.Multi.new()
+    |> get_or_create_consumption_session(consumption)
+    |> Ecto.Multi.update(
+      :consumption,
+      &Consumption.session_changeset(consumption,
+        %{consumption_session_id: &1.consumption_session.id}
+      )
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{consumption: consumption}} -> {:ok, consumption}
+      {:error, _, changeset, _} -> {:error, changeset}
+    end
+  end
+
+  defp get_or_create_consumption_session(multi, consumption) do
+    multi
+    |> Ecto.Multi.run(:target_session, fn repo, _changes ->
+      {:ok,
+       repo.one(
+         from cs in ConsumptionSession,
+           order_by: [desc: :last_consumption],
+           limit: 1,
+           where: (cs.last_consumption > ago(4, "hour") and cs.user_id == ^consumption.user_id)
+       ) || %ConsumptionSession{user_id: consumption.user_id}}
+    end)
+    |> Ecto.Multi.insert_or_update(:consumption_session, fn %{target_session: session} ->
+      Drinking.ConsumptionSession.changeset(session, %{last_consumption: consumption.inserted_at})
+    end)
   end
 
   def consumption_image_url(%Consumption{image: image} = consumption, version \\ :display) do
