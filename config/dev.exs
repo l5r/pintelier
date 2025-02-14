@@ -22,6 +22,7 @@ config :pintelier, PintelierWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
+  serve_uploads: true,
   debug_errors: true,
   secret_key_base: "ibEC0vyLTtKKBnDRhwEYiKNdkdJt6CtAwbI1nmOBizR7qbPdP97pZXZ8SFT0CTXC",
   watchers: [
@@ -83,3 +84,8 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+config :waffle,
+  storage: Waffle.Storage.Local,
+  asset_host: "/",
+  storage_dir_prefix: "priv/waffle/local"  

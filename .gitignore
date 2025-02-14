@@ -35,6 +35,9 @@ pintelier-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Ignore user file uploads
+/priv/waffle/local/
+
 /.devenv/
 /.direnv/
 /.nix-mix/

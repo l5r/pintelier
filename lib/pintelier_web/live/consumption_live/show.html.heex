@@ -14,6 +14,8 @@
   <:item title="Abv">{@consumption.abv}</:item>
 </.list>
 
+<img src={@image_url} />
+
 <.back navigate={~p"/consumptions"}>Back to consumptions</.back>
 
 <.modal :if={@live_action == :edit} id="consumption-modal" show on_cancel={JS.patch(~p"/consumptions/#{@consumption}")}>

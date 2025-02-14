@@ -34,6 +34,13 @@ defmodule PintelierWeb.Endpoint do
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :pintelier
   end
 
+  if config[:serve_uploads] do
+    plug Plug.Static,
+      at: "/uploads",
+      from: Path.expand("./priv/waffle/local/uploads"),
+      gzip: false
+  end
+
   plug Phoenix.LiveDashboard.RequestLogger,
     param_key: "request_logger",
     cookie_key: "request_logger"

@@ -42,8 +42,38 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
         />
         <div :if={is_blank?(@form[:drink_id].value)} class="flex flex-row">
           <.input field={@form[:name]} type="text" label="Name" />
-          <.input field={@form[:abv]} type="number" label="Abv" step="0.1" class="w-10"/>
+          <.input field={@form[:abv]} type="number" label="Abv" step="0.1" class="w-10" />
         </div>
+
+        <div class="" phx-drop-target={@uploads.image.ref}>
+          <.live_file_input upload={@uploads.image} />
+
+          <article :for={entry <- @uploads.image.entries} class="upload-entry">
+            <figure>
+              <.live_img_preview entry={entry} />
+              <figcaption>{entry.client_name}</figcaption>
+            </figure>
+
+            <%!-- entry.progress will update automatically for in-flight entries --%>
+            <progress value={entry.progress} max="100">{entry.progress}%</progress>
+
+            <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
+            <button
+              type="button"
+              phx-click="cancel-upload"
+              phx-value-ref={entry.ref}
+              aria-label="cancel"
+            >
+              &times;
+            </button>
+
+            <%!-- Phoenix.Component.upload_errors/2 returns a list of error atoms --%>
+            <.error :for={err <- upload_errors(@uploads.image, entry)}>
+              {translate_error(err)}
+            </.error>
+          </article>
+        </div>
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Consumption</.button>
         </:actions>
@@ -63,7 +93,9 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
      end)
      |> assign_new(:form, fn ->
        to_form(Drinking.change_consumption(consumption))
-     end)}
+     end)
+     |> assign_new(:uploaded_files, fn -> [] end)
+     |> allow_upload(:image, accept: ~w(.jpg .jpeg .png .webp))}
   end
 
   @impl true
@@ -73,11 +105,35 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
   end
 
   def handle_event("save", %{"consumption" => consumption_params}, socket) do
+    uploaded_paths =
+      consume_uploaded_entries(socket, :image, fn %{path: path}, entry ->
+        path_with_extension = path <> "." <> List.first(MIME.extensions(entry.client_type), "bin")
+        File.rename!(path, path_with_extension)
+        {:ok, path_with_extension}
+      end)
+
+    consumption_params =
+      case uploaded_paths do
+        [] -> consumption_params
+        [uploaded_path] -> Map.put(consumption_params, "image", uploaded_path)
+      end
+
     save_consumption(socket, socket.assigns.action, consumption_params)
   end
 
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :image, ref)}
+  end
+
   defp save_consumption(socket, :edit, consumption_params) do
-    case Drinking.update_consumption(socket.assigns.consumption, consumption_params) do
+    save_result =
+      if socket.assigns.consumption.id do
+        Drinking.update_consumption(socket.assigns.consumption, consumption_params)
+      else
+        Drinking.create_consumption(socket.assigns.consumption, consumption_params)
+      end
+
+    case save_result do
       {:ok, consumption} ->
         notify_parent({:saved, consumption})
 

@@ -53,6 +53,7 @@
           packages = [ 
             config.packages.default
             pkgs.elixir-ls
+            pkgs.imagemagick
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.inotify-tools ];
 
           languages.elixir.enable = true;

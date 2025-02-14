@@ -18,7 +18,7 @@ defmodule Pintelier.Drinking do
 
   """
   def list_consumptions do
-    Repo.all(Consumption)
+    Repo.all(from c in Consumption, order_by: [desc: c.inserted_at])
   end
 
   @doc """
@@ -50,9 +50,25 @@ defmodule Pintelier.Drinking do
 
   """
   def create_consumption(user_id, attrs \\ %{}) do
-    %Consumption{user_id: user_id}
-    |> Consumption.changeset(attrs)
-    |> Repo.insert()
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(
+      :consumption,
+      %Consumption{user_id: user_id}
+      |> Consumption.changeset(attrs)
+    )
+    |> Ecto.Multi.update(
+      :consumption_with_image,
+      &Consumption.image_changeset(&1.consumption, attrs)
+    )
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{consumption_with_image: consumption}} -> {:ok, IO.inspect(consumption)}
+      {:error, _, changeset, _} -> {:error, changeset}
+    end
+  end
+
+  def consumption_image_url(%Consumption{image: image} = consumption, version \\ :display) do
+    Pintelier.ConsumptionImage.url({image, consumption}, version)
   end
 
   @doc """
@@ -70,6 +86,7 @@ defmodule Pintelier.Drinking do
   def update_consumption(%Consumption{} = consumption, attrs) do
     consumption
     |> Consumption.changeset(attrs)
+    |> Consumption.image_changeset(attrs)
     |> Repo.update()
   end
 
@@ -86,6 +103,7 @@ defmodule Pintelier.Drinking do
 
   """
   def delete_consumption(%Consumption{} = consumption) do
+    Consumption.delete_image(consumption)
     Repo.delete(consumption)
   end
 
@@ -99,6 +117,8 @@ defmodule Pintelier.Drinking do
 
   """
   def change_consumption(%Consumption{} = consumption, attrs \\ %{}) do
-    Consumption.changeset(consumption, attrs)
+    consumption
+    |> Consumption.changeset(attrs)
+    |> Consumption.image_changeset(attrs)
   end
 end
