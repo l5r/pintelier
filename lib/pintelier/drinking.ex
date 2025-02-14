@@ -15,12 +15,16 @@ defmodule Pintelier.Drinking do
 
   ## Examples
 
-      iex> list_consumptions()
+      iex> list_global_consumptions()
       [%Consumption{}, ...]
 
   """
-  def list_consumptions do
+  def list_global_consumptions do
     Repo.all(from c in Consumption, order_by: [desc: c.inserted_at], preload: [:user])
+  end
+
+  def list_user_consumptions(user) do
+    Repo.all(from c in Consumption, where: c.user_id == ^user.id, order_by: [desc: c.inserted_at], preload: [:user])
   end
 
   @doc """
@@ -38,6 +42,8 @@ defmodule Pintelier.Drinking do
 
   """
   def get_consumption!(id), do: Repo.get!(from(c in Consumption, preload: [:user]), id)
+
+  def get_user_consumption!(id, user), do: Repo.get!(from(c in Consumption, where: c.user_id == ^user.id, preload: [:user]), id)
 
   @doc """
   Creates a consumption.
