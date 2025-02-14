@@ -13,6 +13,19 @@ defmodule PintelierWeb.UserSettingsLive do
     <div class="space-y-12 divide-y">
       <div>
         <.simple_form
+          for={@user_info_form}
+          id="user_info_form"
+          phx-submit="update_user_info"
+          phx-change="validate_user_info"
+        >
+          <.input field={@user_info_form[:name]} type="text" label="Name" required />
+          <:actions>
+            <.button phx-disable-with="Saving...">Save</.button>
+          </:actions>
+        </.simple_form>
+      </div>
+      <div>
+        <.simple_form
           for={@email_form}
           id="email_form"
           phx-submit="update_email"
@@ -88,6 +101,7 @@ defmodule PintelierWeb.UserSettingsLive do
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
+    user_info_changeset = Accounts.change_user_info(user)
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
 
@@ -96,11 +110,39 @@ defmodule PintelierWeb.UserSettingsLive do
       |> assign(:current_password, nil)
       |> assign(:email_form_current_password, nil)
       |> assign(:current_email, user.email)
+      |> assign(:user_info_form, to_form(user_info_changeset))
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
 
     {:ok, socket}
+  end
+
+  def handle_event("validate_user_info", params, socket) do
+    %{"user" => user_params} = params
+
+    user_info_form =
+      socket.assigns.current_user
+      |> Accounts.change_user_info(user_params)
+      |> Map.put(:action, :validate)
+      |> to_form()
+
+    {:noreply, assign(socket, user_info_form: user_info_form)}
+  end
+
+  def handle_event("update_user_info", params, socket) do
+    %{"user" => user_params} = params
+    user = socket.assigns.current_user
+
+    user_info_form =
+      user
+      |> Accounts.update_user_info(user_params)
+      |> case do
+      	{:ok, user} -> to_form(Accounts.change_user_info(user))
+      	{:error, changeset} -> to_form(changeset)
+      end
+
+    {:noreply, assign(socket, user_info_form: user_info_form)}
   end
 
   def handle_event("validate_email", params, socket) do

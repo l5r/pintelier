@@ -5,6 +5,7 @@ defmodule Pintelier.Accounts.User do
   @foreign_key_type :binary_id
   schema "users" do
     field :email, :string
+    field :name, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
@@ -93,6 +94,12 @@ defmodule Pintelier.Accounts.User do
     else
       changeset
     end
+  end
+
+  def info_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name])
+    |> validate_length(:name, min: 3)
   end
 
   @doc """

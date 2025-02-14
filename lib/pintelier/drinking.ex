@@ -18,7 +18,7 @@ defmodule Pintelier.Drinking do
 
   """
   def list_consumptions do
-    Repo.all(from c in Consumption, order_by: [desc: c.inserted_at])
+    Repo.all(from c in Consumption, order_by: [desc: c.inserted_at], preload: [:user])
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule Pintelier.Drinking do
       ** (Ecto.NoResultsError)
 
   """
-  def get_consumption!(id), do: Repo.get!(Consumption, id)
+  def get_consumption!(id), do: Repo.get!(from(c in Consumption, preload: [:user]), id)
 
   @doc """
   Creates a consumption.

@@ -1,5 +1,5 @@
 <.header>
-  Consumption {@consumption.id}
+  Consumption by {@consumption.user.name} at {@consumption.inserted_at}
   <:subtitle>This is a consumption record from your database.</:subtitle>
   <:actions>
     <.link patch={~p"/consumptions/#{@consumption}/show/edit"} phx-click={JS.push_focus()}>

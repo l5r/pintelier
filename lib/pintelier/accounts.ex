@@ -101,6 +101,15 @@ defmodule Pintelier.Accounts do
 
   ## Settings
 
+  def change_user_info(user, attrs \\ %{}) do
+    User.info_changeset(user, attrs)
+  end
+
+  def update_user_info(user, attrs \\ %{}) do
+    User.info_changeset(user, attrs)
+    |> Repo.update()
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the user email.
 
@@ -358,6 +367,6 @@ defmodule Pintelier.Accounts do
   end
 
   def user_is_admin?(user) do
-  	user.is_admin
+    user.is_admin
   end
 end
