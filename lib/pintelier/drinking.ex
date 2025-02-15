@@ -48,7 +48,7 @@ defmodule Pintelier.Drinking do
   """
   def get_consumption!(id), do: Repo.get!(from(c in Consumption, preload: [:user]), id)
 
-  def get_user_consumption!(id, user),
+  def get_user_consumption!(user, id),
     do: Repo.get!(from(c in Consumption, where: c.user_id == ^user.id, preload: [:user]), id)
 
   @doc """
