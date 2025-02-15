@@ -24,7 +24,12 @@ defmodule Pintelier.Drinking do
   end
 
   def list_user_consumptions(user) do
-    Repo.all(from c in Consumption, where: c.user_id == ^user.id, order_by: [desc: c.inserted_at], preload: [:user])
+    Repo.all(
+      from c in Consumption,
+        where: c.user_id == ^user.id,
+        order_by: [desc: c.inserted_at],
+        preload: [:user]
+    )
   end
 
   @doc """
@@ -43,7 +48,8 @@ defmodule Pintelier.Drinking do
   """
   def get_consumption!(id), do: Repo.get!(from(c in Consumption, preload: [:user]), id)
 
-  def get_user_consumption!(id, user), do: Repo.get!(from(c in Consumption, where: c.user_id == ^user.id, preload: [:user]), id)
+  def get_user_consumption!(id, user),
+    do: Repo.get!(from(c in Consumption, where: c.user_id == ^user.id, preload: [:user]), id)
 
   @doc """
   Creates a consumption.
@@ -80,7 +86,8 @@ defmodule Pintelier.Drinking do
     |> get_or_create_consumption_session(consumption)
     |> Ecto.Multi.update(
       :consumption,
-      &Consumption.session_changeset(consumption,
+      &Consumption.session_changeset(
+        consumption,
         %{consumption_session_id: &1.consumption_session.id}
       )
     )
@@ -99,7 +106,7 @@ defmodule Pintelier.Drinking do
          from cs in ConsumptionSession,
            order_by: [desc: :last_consumption],
            limit: 1,
-           where: (cs.last_consumption > ago(4, "hour") and cs.user_id == ^consumption.user_id)
+           where: cs.last_consumption > ago(4, "hour") and cs.user_id == ^consumption.user_id
        ) || %ConsumptionSession{user_id: consumption.user_id}}
     end)
     |> Ecto.Multi.insert_or_update(:consumption_session, fn %{target_session: session} ->
