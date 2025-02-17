@@ -31,6 +31,7 @@ defmodule PintelierWeb.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
+        <.input field={@form[:name]} type="text" label="Name" required />
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
 
@@ -56,11 +57,13 @@ defmodule PintelierWeb.UserRegistrationLive do
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.register_user(user_params) do
       {:ok, user} ->
-        {:ok, _} =
-          Accounts.deliver_user_confirmation_instructions(
+        socket = case Accounts.deliver_user_confirmation_instructions(
             user,
             &url(~p"/users/confirm/#{&1}")
-          )
+          ) do
+            {:ok, _} -> socket
+            {:error, _} -> socket |> put_flash(:error, "Failed to send confirmation email!")
+        end
 
         changeset = Accounts.change_user_registration(user)
         {:noreply, socket |> assign(trigger_submit: true) |> assign_form(changeset)}

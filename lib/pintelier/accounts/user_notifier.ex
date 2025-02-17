@@ -8,7 +8,7 @@ defmodule Pintelier.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Pintelier", "contact@example.com"})
+      |> from({"Pintelier", "noreply@pintelier.be"})
       |> subject(subject)
       |> text_body(body)
 

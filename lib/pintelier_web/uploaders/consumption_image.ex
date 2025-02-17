@@ -39,7 +39,7 @@ defmodule Pintelier.ConsumptionImage do
 
   # Override the persisted filenames:
   def filename(version, {file, _sccope}) do
-    "image-#{version}.#{Path.extname(file.file_name)}"
+    "image-#{version}"
   end
 
   # Override the storage directory:

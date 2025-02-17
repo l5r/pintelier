@@ -114,4 +114,21 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  config :pintelier, Pintelier.Mailer,
+    adapter: Swoosh.Adapters.Scaleway,
+    project_id: System.get_env("SCALEWAY_PROJECT_ID"),
+    secret_key: System.get_env("SCALEWAY_SECRET_KEY")
+
+  config :waffle,
+    storage: Waffle.Storage.S3, 
+    bucket: {:system, "S3_BUCKET"},
+    asset_host: {:system, "ASSET_HOST"}
+
+  config :ex_aws,
+    region: {:system, "S3_REGION"},
+    s3: [
+      scheme: "https://",
+      host: {:system, "S3_HOST"},
+      region: {:system, "S3_REGION"},
+    ]
 end

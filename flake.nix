@@ -32,7 +32,32 @@
         # system.
 
         # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
-        packages.default = pkgs.hello;
+        packages.default = let
+            mixNixDeps = import ./mix_deps.nix {inherit (pkgs) beamPackages lib;};
+            translatedPlatform =
+              {
+                aarch64-darwin = "macos-arm64";
+                aarch64-linux = "linux-arm64";
+                armv7l-linux = "linux-armv7";
+                x86_64-darwin = "macos-x64";
+                x86_64-linux = "linux-x64";
+              }
+              .${system};
+         in pkgs.beamPackages.mixRelease {
+          src = ./.;
+          pname = "pintelier";
+          version = "0.1.0";
+          inherit mixNixDeps;
+
+          preInstall = ''
+          '';
+
+          postBuild =''
+            ln -s ${pkgs.tailwindcss}/bin/tailwindcss _build/tailwind-${translatedPlatform}
+            ln -s ${pkgs.esbuild}/bin/esbuild _build/esbuild-${translatedPlatform}
+            mix do deps.loadpaths --no-deps-check, assets.deploy, phx.gen.release
+          '';
+        };
 
         devenv.shells.default = {
           devenv.root =
@@ -51,7 +76,7 @@
 
           # https://devenv.sh/reference/options/
           packages = [ 
-            config.packages.default
+            # config.packages.default
             pkgs.elixir-ls
             pkgs.imagemagick
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.inotify-tools ];

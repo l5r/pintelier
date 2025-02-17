@@ -77,6 +77,7 @@ defmodule Pintelier.Accounts do
   def register_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
+    |> User.info_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -96,7 +97,9 @@ defmodule Pintelier.Accounts do
 
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false, validate_email: false)
+    user
+    |> User.registration_changeset(attrs, hash_password: false, validate_email: false)
+    |> User.info_changeset(attrs)
   end
 
   ## Settings

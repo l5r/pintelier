@@ -46,7 +46,7 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
         </div>
 
         <div class="" phx-drop-target={@uploads.image.ref}>
-          <.live_file_input upload={@uploads.image} />
+          <.live_file_input upload={@uploads.image} accept="image/*" capture="user" />
 
           <article :for={entry <- @uploads.image.entries} class="upload-entry">
             <figure>

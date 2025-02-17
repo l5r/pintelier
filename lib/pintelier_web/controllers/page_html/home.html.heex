@@ -1,8 +1,24 @@
 <.flash_group flash={@flash} />
 
-<div class="flex flex-wrap gap-4">
-  <article :for={consumption <- @consumptions} class="rounded shadow-lg px-6 py-4 border flex-auto">
-    <img :if={consumption.image} src={Pintelier.Drinking.consumption_image_url(consumption)} class="mb-4 rounded"/>
+<.header>
+  Drinking
+  <:actions>
+    <.link navigate={~p"/consumptions/new"}>
+      <.button>New Consumption</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="flex flex-wrap gap-4 mt-8">
+  <article
+    :for={consumption <- @consumptions}
+    class="rounded shadow-lg px-6 py-4 border flex-auto"
+  >
+    <img
+      :if={consumption.image}
+      src={Pintelier.Drinking.consumption_image_url(consumption)}
+      class="mb-4 rounded"
+    />
     <h3 class="font-bold text-xl">{consumption.user.name}</h3>
     <span>{consumption.volume_cl}cl {consumption.name} ({consumption.abv}%)</span>
   </article>
