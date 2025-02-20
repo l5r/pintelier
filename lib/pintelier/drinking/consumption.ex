@@ -10,6 +10,7 @@ defmodule Pintelier.Drinking.Consumption do
     field :abv, :decimal
     field :name, :string
     field :volume_cl, :integer
+    field :caption, :string
 
     field :image, Pintelier.ConsumptionImage.Type
 
@@ -23,7 +24,7 @@ defmodule Pintelier.Drinking.Consumption do
   @doc false
   def changeset(consumption, attrs) do
     consumption
-    |> cast(attrs, [:volume_cl, :drink_id, :name, :abv])
+    |> cast(attrs, [:volume_cl, :drink_id, :name, :abv, :caption])
     |> update_drink()
     |> validate_required([:volume_cl, :name, :abv])
     |> foreign_key_constraint(:drink_id)

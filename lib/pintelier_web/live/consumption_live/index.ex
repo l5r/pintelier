@@ -6,7 +6,8 @@ defmodule PintelierWeb.ConsumptionLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :consumptions, Drinking.list_user_consumptions(socket.assigns.current_user))}
+    {:ok,
+     stream(socket, :consumptions, Drinking.list_user_consumptions(socket.assigns.current_user))}
   end
 
   @impl true
@@ -22,6 +23,7 @@ defmodule PintelierWeb.ConsumptionLive.Index do
 
   defp apply_action(socket, :new, _params) do
     user_id = socket.assigns.current_user.id
+
     socket
     |> assign(:page_title, "New Consumption")
     |> assign(:consumption, %Consumption{user_id: user_id, drink: nil})
@@ -35,7 +37,8 @@ defmodule PintelierWeb.ConsumptionLive.Index do
 
   @impl true
   def handle_info({PintelierWeb.ConsumptionLive.FormComponent, {:saved, consumption}}, socket) do
-    {:noreply, stream_insert(socket, :consumptions, Pintelier.Repo.preload(consumption, :user))}
+    {:noreply,
+     stream_insert(socket, :consumptions, Pintelier.Repo.preload(consumption, :user), at: 0)}
   end
 
   @impl true

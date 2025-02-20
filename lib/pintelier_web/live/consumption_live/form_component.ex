@@ -86,6 +86,12 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
           </article>
         </div>
 
+        <.input
+          field={@form[:caption]}
+          type="text"
+          label="Caption"
+        />
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Consumption</.button>
         </:actions>
