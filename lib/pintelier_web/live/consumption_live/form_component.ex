@@ -40,32 +40,44 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
           prompt="Other"
           options={@drink_options}
         />
-        <div :if={is_blank?(@form[:drink_id].value)} class="flex flex-row">
+        <div :if={is_blank?(@form[:drink_id].value)} class="flex flex-row gap-2">
           <.input field={@form[:name]} type="text" label="Name" />
           <.input field={@form[:abv]} type="number" label="Abv" step="0.1" class="w-10" />
         </div>
 
-        <div class="" phx-drop-target={@uploads.image.ref}>
-          <.live_file_input upload={@uploads.image} accept="image/*" capture="user" />
+        <div class="bg-gray-100 p-4 rounded-lg" phx-drop-target={@uploads.image.ref}>
+          <label
+            for={@uploads.image.ref}
+            class="rounded-lg bg-blue-900 hover:bg-blue-700 p-3 text-sm font-semibold leading-6 text-white cursor-pointer block w-fit"
+          >
+            <.live_file_input upload={@uploads.image} capture="user" class="hidden" />
+            <.icon name="hero-photo-solid" class="align-bottom me-1" />Add Image
+          </label>
 
-          <article :for={entry <- @uploads.image.entries} class="upload-entry">
+          <article
+            :for={entry <- @uploads.image.entries}
+            class="rounded border w-fit mt-4 px-4 py-2 flex flex-col items-center gap-2 bg-blue-100"
+          >
             <figure>
-              <.live_img_preview entry={entry} />
-              <figcaption>{entry.client_name}</figcaption>
+              <.live_img_preview entry={entry} class="max-w-32 max-h-32" />
             </figure>
 
-            <%!-- entry.progress will update automatically for in-flight entries --%>
-            <progress value={entry.progress} max="100">{entry.progress}%</progress>
+            <div class="flex rounded border border-gray-300 divide-x divide-gray-300">
+              <%!-- entry.progress will update automatically for in-flight entries --%>
+              <progress value={entry.progress} max="100" class="rounded-s">{entry.progress}%</progress>
 
-            <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
-            <button
-              type="button"
-              phx-click="cancel-upload"
-              phx-value-ref={entry.ref}
-              aria-label="cancel"
-            >
-              &times;
-            </button>
+              <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
+              <button
+                class="bg-red-700 rounded-e"
+                type="button"
+                phx-click="cancel-upload"
+                phx-target={@myself}
+                phx-value-ref={entry.ref}
+                aria-label="cancel"
+              >
+                <.icon name="hero-x-mark" class="text-white"/>
+              </button>
+            </div>
 
             <%!-- Phoenix.Component.upload_errors/2 returns a list of error atoms --%>
             <.error :for={err <- upload_errors(@uploads.image, entry)}>

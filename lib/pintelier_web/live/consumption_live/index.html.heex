@@ -12,6 +12,7 @@
   rows={@streams.consumptions}
   row_click={fn {_id, consumption} -> JS.navigate(~p"/consumptions/#{consumption}") end}
 >
+  <:col :let={{_id, consumption}} label="Image"><img src={Drinking.consumption_image_url(consumption, :thumb)} class="h-11"></:col>
   <:col :let={{_id, consumption}} label="By">{consumption.user.name}</:col>
   <:col :let={{_id, consumption}} label="Volume cl"><span class="text-right">{consumption.volume_cl} cl</span></:col>
   <:col :let={{_id, consumption}} label="Name">{consumption.name}</:col>

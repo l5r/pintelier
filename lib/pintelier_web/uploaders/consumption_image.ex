@@ -20,25 +20,30 @@ defmodule Pintelier.ConsumptionImage do
   # end
 
   # Whitelist file extensions:
-   def validate({file, _}) do
-     file_extension = file.file_name |> Path.extname() |> String.downcase()
-  
-     case Enum.member?(@extensions, file_extension) do
-       true -> :ok
-       false -> {:error, "invalid file type"}
-     end
-   end
+  def validate({file, _}) do
+    file_extension = file.file_name |> Path.extname() |> String.downcase()
 
-  # Define a thumbnail transformation:
-  def transform(:thumb, _) do
-    {:convert, "-strip -thumbnail 128x128^ -gravity center -extent 128x128 -quality 75 -format jpg", :jpg}
+    case Enum.member?(@extensions, file_extension) do
+      true -> :ok
+      false -> {:error, "invalid file type"}
+    end
   end
+
+  def transform(:original, _), do: :noaction
+
+  def transform(:thumb, _) do
+    {:convert,
+     "-auto-orient -strip -thumbnail 128x128^ -gravity center -extent 128x128 -quality 75 -format jpg",
+     :jpg}
+  end
+
   def transform(:display, _) do
-    {:convert, "-strip -gravity center -extent 1:1 -resize 1024x1024> -format jpg", :jpg}
+    {:convert, "-auto-orient -strip -gravity center -extent 1:1 -resize 1024x1024> -format jpg",
+     :jpg}
   end
 
   # Override the persisted filenames:
-  def filename(version, {file, _sccope}) do
+  def filename(version, {_file, _sccope}) do
     "image-#{version}"
   end
 
