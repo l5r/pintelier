@@ -344,7 +344,7 @@ defmodule PintelierWeb.CoreComponents do
         |> JS.concat(JS.dispatch("input", to: @target_input))
       }
       class={[
-        "py-2 px-3 text-sm font-semibold border-e-0 border-4 last:border-e-4 border-zinc-900 first:rounded-s-md last:rounded-e-md box-content",
+        "py-2 px-3 text-sm font-semibold border-e-0 border-4 last:border-e-4 border-zinc-900 first:rounded-s-md last:rounded-e-md",
         @value != @target_value && "bg-zinc-100 hover:bg-zinc-200",
         @value == @target_value && "bg-zinc-900 hover:bg-zinc-700 text-white"
       ]}

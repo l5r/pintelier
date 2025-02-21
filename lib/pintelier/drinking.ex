@@ -118,6 +118,34 @@ defmodule Pintelier.Drinking do
     Pintelier.ConsumptionImage.url({image, consumption}, version)
   end
 
+  def latest_session(user) do
+    consumptions_query =
+      from(c in Consumption,
+        where: c.user_id == ^user.id,
+        group_by: c.consumption_session_id,
+        select: %{
+          consumption_session_id: c.consumption_session_id,
+          volume_cl: sum(c.volume_cl),
+          abv: avg(c.abv)
+        }
+      )
+
+    Repo.one(
+      from cs in ConsumptionSession,
+        order_by: [desc: :last_consumption],
+        limit: 1,
+        where: cs.user_id == ^user.id,
+        join: c in subquery(consumptions_query),
+        on: cs.id == c.consumption_session_id,
+        select: %{
+          volume_cl: c.volume_cl,
+          abv: c.abv,
+          inserted_at: cs.inserted_at,
+          last_consumption: cs.last_consumption
+        }
+    )
+  end
+
   @doc """
   Updates a consumption.
 

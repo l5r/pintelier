@@ -1,3 +1,7 @@
+<p>Between {Timex.format!(@latest_session.inserted_at, "{relative}", :relative)} and
+{Timex.format!(@latest_session.last_consumption, "{relative}", :relative)}
+you consumed {@latest_session.volume_cl}cl at an average of {@latest_session.abv}%</p>
+
 <.header>
   Listing Consumptions
   <:actions>

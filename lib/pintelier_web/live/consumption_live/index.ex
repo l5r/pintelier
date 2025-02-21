@@ -6,8 +6,10 @@ defmodule PintelierWeb.ConsumptionLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     stream(socket, :consumptions, Drinking.list_user_consumptions(socket.assigns.current_user))}
+    socket = socket
+    |> stream(:consumptions, Drinking.list_user_consumptions(socket.assigns.current_user))
+    |> assign(:latest_session, Drinking.latest_session(socket.assigns.current_user))
+    {:ok, socket}
   end
 
   @impl true
