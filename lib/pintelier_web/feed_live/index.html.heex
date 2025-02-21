@@ -18,18 +18,26 @@
       src={Pintelier.Drinking.consumption_image_url(consumption)}
       class="mb-4 rounded"
     />
-    <div class="flex flex-row content-between">
-    <div class="flex flex-row items-center gap-1 w-fit">
-      <span class="font-bold text-xl">{consumption.user.name}</span>
-      &middot; <span class="text-sm text-slate-600">{consumption.name} ({consumption.abv}%)</span>
-    </div>
-    <span class="self-end ml-auto">{Timex.format!(consumption.inserted_at, "{relative}", :relative)}</span>
+    <div class="flex flex-row items-center content-between gap-4">
+      <div class="flex flex-row items-center gap-1 w-fit">
+        <span class="font-bold text-xl">{consumption.user.name}</span>
+        &middot;
+        <span class="text-sm text-slate-600">{consumption.name} ({consumption.abv}%)</span>
+      </div>
+      <span class="self-end ml-auto my-auto">
+        {Timex.format!(consumption.inserted_at, "{relative}", :relative)}
+      </span>
     </div>
     <p>{consumption.caption}</p>
   </article>
 </div>
 
-<.modal :if={@live_action in [:new, :edit]} id="consumption-modal" show on_cancel={JS.patch(~p"/")}>
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="consumption-modal"
+  show
+  on_cancel={JS.patch(~p"/")}
+>
   <.live_component
     module={PintelierWeb.ConsumptionLive.FormComponent}
     id={@consumption.id || :new}
