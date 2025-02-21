@@ -1,17 +1,16 @@
-<.flash_group flash={@flash} />
-
 <.header>
   Drinking
   <:actions>
-    <.link navigate={~p"/consumptions/new"}>
+    <.link navigate={~p"/new"}>
       <.button>New Consumption</.button>
     </.link>
   </:actions>
 </.header>
 
-<div class="mt-16 flex flex-col gap-8 items-center">
+<div class="mt-16 flex flex-col gap-8 items-center" id="consumptions-feed" phx-update="stream">
   <article
-    :for={consumption <- @consumptions}
+    :for={{id, consumption} <- @streams.consumptions}
+    id={id}
     class="rounded shadow-lg px-6 py-4 border flex-auto"
   >
     <img
@@ -26,3 +25,14 @@
     <p>{consumption.caption}</p>
   </article>
 </div>
+
+<.modal :if={@live_action in [:new, :edit]} id="consumption-modal" show on_cancel={JS.patch(~p"/")}>
+  <.live_component
+    module={PintelierWeb.ConsumptionLive.FormComponent}
+    id={@consumption.id || :new}
+    title={@page_title}
+    action={@live_action}
+    consumption={@consumption}
+    patch={~p"/"}
+  />
+</.modal>

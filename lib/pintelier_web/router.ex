@@ -20,7 +20,12 @@ defmodule PintelierWeb.Router do
   scope "/", PintelierWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live_session :maybe_current_user,
+      on_mount: [{PintelierWeb.UserAuth, :mount_current_user}] do
+
+      live "/", FeedLive.Index, :index
+      live "/new", FeedLive.Index, :new
+    end
   end
 
   scope "/", PintelierWeb do
@@ -113,5 +118,4 @@ defmodule PintelierWeb.Router do
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end
   end
-
 end
