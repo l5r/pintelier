@@ -20,19 +20,31 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input
-          :for={vol <- [25, 33, 50]}
-          field={@form[:volume_cl]}
-          type="setter_button"
-          label={"#{vol}cl"}
-          target_value={vol}
-        />
-        <.input field={@form[:volume_cl]} type="number" label="Volume (cl)" list="consumption-sizes" />
-        <datalist id="consumption-sizes">
-          <option value="25"></option>
-          <option value="33"></option>
-          <option value="50"></option>
-        </datalist>
+        <div class="flex flex-col sm:items-end gap-2 sm:flex-row">
+          <div class="rounded-lg">
+            <.input
+              :for={vol <- [25, 33, 50]}
+              field={@form[:volume_cl]}
+              type="setter_button"
+              label={"#{vol}cl"}
+              target_value={vol}
+            />
+          </div>
+          <div class="w-fit">
+            <.input
+              field={@form[:volume_cl]}
+              type="number"
+              label="Volume (cl)"
+              list="consumption-sizes"
+              class="w-fit"
+            />
+          </div>
+          <datalist id="consumption-sizes">
+            <option value="25"></option>
+            <option value="33"></option>
+            <option value="50"></option>
+          </datalist>
+        </div>
         <.input
           field={@form[:drink_id]}
           type="select"
@@ -64,7 +76,9 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
 
             <div class="flex rounded border border-gray-300 divide-x divide-gray-300">
               <%!-- entry.progress will update automatically for in-flight entries --%>
-              <progress value={entry.progress} max="100" class="rounded-s">{entry.progress}%</progress>
+              <progress value={entry.progress} max="100" class="rounded-s">
+                {entry.progress}%
+              </progress>
 
               <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
               <button
@@ -75,7 +89,7 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
                 phx-value-ref={entry.ref}
                 aria-label="cancel"
               >
-                <.icon name="hero-x-mark" class="text-white"/>
+                <.icon name="hero-x-mark" class="text-white" />
               </button>
             </div>
 
@@ -86,11 +100,7 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
           </article>
         </div>
 
-        <.input
-          field={@form[:caption]}
-          type="text"
-          label="Caption"
-        />
+        <.input field={@form[:caption]} type="text" label="Caption" />
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Consumption</.button>
