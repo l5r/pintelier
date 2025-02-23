@@ -627,6 +627,16 @@ defmodule PintelierWeb.CoreComponents do
     """
   end
 
+  attr :time, DateTime
+  attr :rest, :global
+  def rel_time(assigns) do
+    ~H"""
+    <span title={Timex.format!(@time, "{ISOdate} {ISOtime}")} {@rest}>
+      {Timex.format!(@time, "{relative}", :relative)}
+    </span>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

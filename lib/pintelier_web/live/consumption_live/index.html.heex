@@ -1,5 +1,5 @@
-<p>Between {Timex.format!(@latest_session.inserted_at, "{relative}", :relative)} and
-{Timex.format!(@latest_session.last_consumption, "{relative}", :relative)}
+<p>Between <.rel_time time={@latest_session.inserted_at} /> and
+<.rel_time time={@latest_session.last_consumption} />
 you consumed {@latest_session.volume_cl}cl at an average of {@latest_session.abv}%</p>
 
 <.header>

@@ -24,9 +24,7 @@
         &middot;
         <span class="text-sm text-slate-600">{consumption.volume_cl}cl {consumption.name} ({consumption.abv}%)</span>
       </div>
-      <span class="self-end ml-auto my-auto">
-        {Timex.format!(consumption.inserted_at, "{relative}", :relative)}
-      </span>
+      <.rel_time time={consumption.inserted_at} class="self-end ml-auto my-auto" />
     </div>
     <p>{consumption.caption}</p>
   </article>
