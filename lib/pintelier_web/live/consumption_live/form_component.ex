@@ -62,7 +62,7 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
             for={@uploads.image.ref}
             class="rounded-lg bg-blue-900 hover:bg-blue-700 p-3 text-sm font-semibold leading-6 text-white cursor-pointer block w-fit"
           >
-            <.live_file_input upload={@uploads.image} capture="user" class="hidden" />
+            <.live_file_input upload={@uploads.image} capture="environment" class="hidden" />
             <.icon name="hero-photo-solid" class="align-bottom me-1" />Add Image
           </label>
 
@@ -123,7 +123,7 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
        to_form(Drinking.change_consumption(consumption))
      end)
      |> assign_new(:uploaded_files, fn -> [] end)
-     |> allow_upload(:image, accept: ~w(.jpg .jpeg .png .webp))}
+     |> allow_upload(:image, accept: ~w(image/png image/jpeg image/webp))}
   end
 
   @impl true
