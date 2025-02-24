@@ -1,6 +1,6 @@
 <p>Between <.rel_time time={@latest_session.inserted_at} /> and
 <.rel_time time={@latest_session.last_consumption} />
-you consumed {@latest_session.volume_cl}cl at an average of {@latest_session.abv}%</p>
+you consumed {@latest_session.volume_cl}cl at an average of {Decimal.round(@latest_session.abv, 2)}%</p>
 
 <.header>
   Listing Consumptions

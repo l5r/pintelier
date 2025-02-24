@@ -126,7 +126,7 @@ defmodule Pintelier.Drinking do
         select: %{
           consumption_session_id: c.consumption_session_id,
           volume_cl: sum(c.volume_cl),
-          abv: avg(c.abv)
+          abv: sum(c.abv * c.volume_cl) / sum(c.volume_cl)
         }
       )
 
