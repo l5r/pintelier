@@ -50,6 +50,11 @@ defmodule Pintelier.Accounts.User do
       |> change(is_admin: is_admin)
   end
 
+  def admin_changeset(user, attrs) do
+  	user
+  	|> cast(attrs, [:is_admin])
+  end
+
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])

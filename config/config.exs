@@ -50,7 +50,11 @@ config :tailwind,
       --input=css/app.css
       --output=../priv/static/assets/app.css
     ),
-    cd: Path.expand("../assets", __DIR__)
+    cd: Path.expand("../assets", __DIR__),
+    env: %{
+      "NODE_PATH" =>
+        "#{Path.expand("../deps", __DIR__)}:#{Path.expand("../assets/vendor", __DIR__)}"
+    }
   ]
 
 # Configures Elixir's Logger

@@ -27,6 +27,14 @@ defmodule Pintelier.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
+  defp asset_dep(name, github, rest \\ []) when is_list(rest) do
+    {name,
+     Keyword.merge(
+       [github: github, app: false, compile: false, depth: 1],
+       rest
+     )}
+  end
+
   # Specifies your project dependencies.
   #
   # Type `mix help deps` for examples and options.
@@ -44,13 +52,13 @@ defmodule Pintelier.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:heroicons,
-       github: "tailwindlabs/heroicons",
-       tag: "v2.1.1",
-       sparse: "optimized",
-       app: false,
-       compile: false,
-       depth: 1},
+      asset_dep(:heroicons, "tailwindlabs/heroicons", tag: "v2.1.1", sparse: "optimized"),
+      {:daisyui, path: "./assets/vendor/daisyui", app: false, compile: false},
+      {:"postcss-js", path: "./assets/vendor/postcss-js", app: false, compile: false},
+      asset_dep(:picocolors, "alexeyraspopov/picocolors", tag: "v1.1.1"),
+      asset_dep(:"css-selector-tokenizer", "css-modules/css-selector-tokenizer", tag: "v0.8.0"),
+      asset_dep(:fastparse, "webpack/fastparse", tag: "v1.1.2"),
+      asset_dep(:cssesc, "mathiasbynens/cssesc", tag: "v3.0.0"),
       {:swoosh, "~> 1.5"},
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 1.0"},
@@ -66,7 +74,8 @@ defmodule Pintelier.MixProject do
       {:hackney, "~> 1.9"},
       {:sweet_xml, "~> 0.6"},
       {:waffle_ecto, "~> 0.0"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:backpex, "~> 0.10.0"}
     ]
   end
 

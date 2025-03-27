@@ -9,7 +9,8 @@ module.exports = {
   content: [
     "./js/**/*.js",
     "../lib/pintelier_web.ex",
-    "../lib/pintelier_web/**/*.*ex"
+    "../lib/pintelier_web/**/*.*ex",
+    "../deps/backpex/**/*.*ex"
   ],
   theme: {
     extend: {
@@ -20,6 +21,7 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    require("daisyui"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //

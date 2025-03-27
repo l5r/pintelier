@@ -1,0 +1,6 @@
+{
+  "name": "postcss-js",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

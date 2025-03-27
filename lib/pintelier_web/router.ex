@@ -2,6 +2,7 @@ defmodule PintelierWeb.Router do
   use PintelierWeb, :router
 
   import PintelierWeb.UserAuth
+  import Backpex.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -48,14 +49,16 @@ defmodule PintelierWeb.Router do
     # TODO: authorization!
     pipe_through [:browser, :require_admin_user]
 
-    live_session :require_admin_user,
-      on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user}] do
-      live "/drinks", DrinkLive.Index, :index
-      live "/drinks/new", DrinkLive.Index, :new
-      live "/drinks/:id/edit", DrinkLive.Index, :edit
+    backpex_routes()
 
-      live "/drinks/:id", DrinkLive.Show, :show
-      live "/drinks/:id/show/edit", DrinkLive.Show, :edit
+    live_session :require_admin_user,
+      on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user},
+      Backpex.InitAssigns] do
+      
+      live_resources "/drinks", Admin.DrinkLive
+      live_resources "/users", Admin.UserLive
+      live_resources "/consumptions", Admin.ConsumptionLive
+      live_resources "/consumption_sessions", Admin.ConsumptionSessionLive
     end
   end
 
