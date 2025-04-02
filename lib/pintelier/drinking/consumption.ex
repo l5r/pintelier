@@ -11,12 +11,17 @@ defmodule Pintelier.Drinking.Consumption do
     field :name, :string
     field :volume_cl, :integer
     field :caption, :string
+    field :is_public, :boolean
 
     field :image, Pintelier.ConsumptionImage.Type
 
     belongs_to :user, Pintelier.Accounts.User, type: :binary_id
     belongs_to :drink, Pintelier.Admin.Drink, type: :binary_id
     belongs_to :consumption_session, Pintelier.Drinking.ConsumptionSession, type: :binary_id
+
+    has_many :group_consumptions, Pintelier.Groups.GroupConsumption
+
+    many_to_many :groups, Pintelier.Groups.Group, join_through: "group_consumptions", on_replace: :delete
 
     timestamps(type: :utc_datetime)
   end
@@ -28,6 +33,7 @@ defmodule Pintelier.Drinking.Consumption do
     |> update_drink()
     |> validate_required([:volume_cl, :name, :abv])
     |> foreign_key_constraint(:drink_id)
+    |> cast_assoc(:group_consumptions, with: &Pintelier.Groups.GroupConsumption.changeset/2)
   end
 
   def image_changeset(consumption, attrs) do

@@ -24,8 +24,8 @@ defmodule PintelierWeb.Router do
     live_session :maybe_current_user,
       on_mount: [{PintelierWeb.UserAuth, :mount_current_user}] do
 
-      live "/", FeedLive.Index, :index
-      live "/new", FeedLive.Index, :new
+    # TODO: make a home page
+    live "/", FeedLive.Index, :index
     end
   end
 
@@ -34,12 +34,20 @@ defmodule PintelierWeb.Router do
 
     live_session :authenticated,
       on_mount: [{PintelierWeb.UserAuth, :ensure_authenticated}] do
+      live "/feed", FeedLive.Index, :index
+      live "/feed/new", FeedLive.Index, :new
+
       live "/consumptions", ConsumptionLive.Index, :index
       live "/consumptions/new", ConsumptionLive.Index, :new
       live "/consumptions/:id/edit", ConsumptionLive.Index, :edit
-
       live "/consumptions/:id", ConsumptionLive.Show, :show
       live "/consumptions/:id/show/edit", ConsumptionLive.Show, :edit
+
+      scope "/groups" do
+        live "/", GroupLive.Index, :index
+        live "/new", GroupLive.Index, :new
+        live "/:id/edit", GroupLive.Index, :edit
+      end
     end
   end
 

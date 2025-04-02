@@ -25,7 +25,7 @@ defmodule PintelierWeb.FeedLive.Index do
       %{id: user_id} ->
         socket
         |> assign(:page_title, "New Consumption")
-        |> assign(:consumption, %Consumption{user_id: user_id, drink: nil})
+        |> assign(:consumption, %Consumption{user_id: user_id, drink: nil, group_consumptions: []})
 
       _ ->
         socket

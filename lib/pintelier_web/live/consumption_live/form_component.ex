@@ -1,4 +1,5 @@
 defmodule PintelierWeb.ConsumptionLive.FormComponent do
+  alias Pintelier.Groups
   alias Pintelier.Admin
   use PintelierWeb, :live_component
 
@@ -56,6 +57,20 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
           <.input field={@form[:name]} type="text" label="Name" />
           <.input field={@form[:abv]} type="number" label="Abv" step="0.1" class="w-10" />
         </div>
+
+        <.input
+          field={@form[:is_public]}
+          type="checkbox"
+          label="Make public?"
+        />
+
+        <.input
+          field={@form[:group_consumptions]}
+          type="select"
+          label="Groups"
+          multiple={true}
+          options={@group_options}
+        />
 
         <div class="bg-gray-100 p-4 rounded-lg" phx-drop-target={@uploads.image.ref}>
           <label
@@ -118,6 +133,9 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
      |> assign_new(:drink_options, fn ->
        Admin.list_drinks()
        |> Enum.map(&{"#{&1.name} (#{&1.abv}%)", &1.id})
+     end)
+     |> assign_new(:group_options, fn ->
+       Groups.list_groups(%{id: consumption.user_id})
      end)
      |> assign_new(:form, fn ->
        to_form(Drinking.change_consumption(consumption))
