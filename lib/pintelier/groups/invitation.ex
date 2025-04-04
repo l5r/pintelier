@@ -16,6 +16,5 @@ defmodule Pintelier.Groups.Invitation do
   def changeset(invitation, attrs) do
     invitation
     |> cast(attrs, [:expiration, :group_id])
-    |> validate_required([:expiration, :group_id])
   end
 end

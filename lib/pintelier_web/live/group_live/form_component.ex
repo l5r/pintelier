@@ -25,6 +25,13 @@ defmodule PintelierWeb.GroupLive.FormComponent do
         </:actions>
       </.simple_form>
 
+      <div :if={@group.id} class="mt-11">
+        <.button :if={@group.id} phx-click="generate_invite" phx-target={@myself}>Create invite link</.button>
+        <code :if={@invite_link} class="block rounded-lg py-2 px-3 mt-2 leading-6 bg-gray-200 border border-zinc-300">
+          {@invite_link}
+        </code>
+      </div>
+
       <h2 class="mt-11 text-lg font-semibold leading-8 text-zinc-800">Members</h2>
       <.table rows={@form[:group_members].value} id="members">
         <:col :let={member} label="Name">{member.user.name}</:col>
@@ -35,17 +42,12 @@ defmodule PintelierWeb.GroupLive.FormComponent do
   end
 
   @impl true
-  def mount(socket) do
-    IO.inspect(socket.assigns, label: :mount)
-  	{:ok, socket}
-  end
-
-  @impl true
   def update(%{group: group} = assigns, socket) do
     IO.inspect(socket.assigns, label: :update)
     {:ok,
      socket
      |> assign(assigns)
+     |> assign_new(:invite_link, fn -> nil end)
      |> assign_new(:form, fn ->
        to_form(Groups.change_group(group))
      end)}
@@ -59,6 +61,12 @@ defmodule PintelierWeb.GroupLive.FormComponent do
 
   def handle_event("save", %{"group" => group_params}, socket) do
     save_group(socket, socket.assigns.action, group_params)
+  end
+
+  def handle_event("generate_invite", _params, socket) do
+    params = %{expiration: Timex.now() |> Timex.add(Timex.Duration.from_days(30)) }
+  	{:ok, new_invite} = Groups.create_invitation(socket.assigns.group, params)
+  	{:noreply, assign(socket, invite_link: url(~p"/invitations/#{new_invite}"))}
   end
 
   defp save_group(socket, :edit, group_params) do

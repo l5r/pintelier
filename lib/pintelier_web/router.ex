@@ -23,9 +23,8 @@ defmodule PintelierWeb.Router do
 
     live_session :maybe_current_user,
       on_mount: [{PintelierWeb.UserAuth, :mount_current_user}] do
-
-    # TODO: make a home page
-    live "/", FeedLive.Index, :index
+      # TODO: make a home page
+      live "/", FeedLive.Index, :index
     end
   end
 
@@ -46,8 +45,11 @@ defmodule PintelierWeb.Router do
       scope "/groups" do
         live "/", GroupLive.Index, :index
         live "/new", GroupLive.Index, :new
+        live "/:id", GroupLive.Show, :show
         live "/:id/edit", GroupLive.Index, :edit
       end
+
+      get "/invitations/:id", InvitationController, :accept
     end
   end
 
@@ -60,13 +62,11 @@ defmodule PintelierWeb.Router do
     backpex_routes()
 
     live_session :require_admin_user,
-      on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user},
-      Backpex.InitAssigns] do
-      
-      live_resources "/drinks", Admin.DrinkLive
-      live_resources "/users", Admin.UserLive
-      live_resources "/consumptions", Admin.ConsumptionLive
-      live_resources "/consumption_sessions", Admin.ConsumptionSessionLive
+      on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user}, Backpex.InitAssigns] do
+      live_resources("/drinks", Admin.DrinkLive)
+      live_resources("/users", Admin.UserLive)
+      live_resources("/consumptions", Admin.ConsumptionLive)
+      live_resources("/consumption_sessions", Admin.ConsumptionSessionLive)
     end
   end
 

@@ -19,9 +19,10 @@ defmodule Pintelier.Groups do
 
   """
   def list_groups(user) do
-    groups = from g in Group,
-      join: u in assoc(g, :members),
-      where: u.id == ^user.id
+    groups =
+      from g in Group,
+        join: u in assoc(g, :members),
+        where: u.id == ^user.id
 
     Repo.all(groups)
   end
@@ -224,8 +225,12 @@ defmodule Pintelier.Groups do
       [%Invitation{}, ...]
 
   """
-  def list_group_invitations do
-    Repo.all(Invitation)
+  def list_group_invitations(group) do
+    Repo.all(
+      from i in Invitation,
+        join: g in assoc(i, :group),
+        where: g.id == ^group.id
+    )
   end
 
   @doc """
@@ -242,7 +247,13 @@ defmodule Pintelier.Groups do
       ** (Ecto.NoResultsError)
 
   """
-  def get_invitation!(id), do: Repo.get!(Invitation, id)
+  def get_invitation!(id) do
+    invitations =
+      from i in Invitation,
+        preload: :group
+
+    Repo.get!(invitations, id)
+  end
 
   @doc """
   Creates a invitation.
@@ -256,28 +267,10 @@ defmodule Pintelier.Groups do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_invitation(attrs \\ %{}) do
-    %Invitation{}
+  def create_invitation(group, attrs \\ %{}) do
+    %Invitation{group_id: group.id}
     |> Invitation.changeset(attrs)
     |> Repo.insert()
-  end
-
-  @doc """
-  Updates a invitation.
-
-  ## Examples
-
-      iex> update_invitation(invitation, %{field: new_value})
-      {:ok, %Invitation{}}
-
-      iex> update_invitation(invitation, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_invitation(%Invitation{} = invitation, attrs) do
-    invitation
-    |> Invitation.changeset(attrs)
-    |> Repo.update()
   end
 
   @doc """
@@ -307,5 +300,15 @@ defmodule Pintelier.Groups do
   """
   def change_invitation(%Invitation{} = invitation, attrs \\ %{}) do
     Invitation.changeset(invitation, attrs)
+  end
+
+  def add_user_to_group(user, group) do
+    group
+    |> Ecto.build_assoc(:group_members, user: user, authorization: :member)
+    |> Repo.insert(on_conflict: :nothing)
+  end
+
+  def accept_invitation(user, invitation) do
+    add_user_to_group(user, invitation.group)
   end
 end
