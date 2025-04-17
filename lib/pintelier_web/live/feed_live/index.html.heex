@@ -8,33 +8,18 @@
 </.header>
 
 <div class="mt-16 flex flex-col gap-8 items-center" id="consumptions-feed" phx-update="stream">
-  <article
+  <.consumption_card
     :for={{id, consumption} <- @streams.consumptions}
     id={id}
-    class="rounded shadow-lg px-6 py-4 border flex-auto"
-  >
-    <img
-      :if={consumption.image}
-      src={Pintelier.Drinking.consumption_image_url(consumption)}
-      class="mb-4 rounded"
-    />
-    <div class="flex flex-row items-center content-between gap-4">
-      <div class="flex flex-row items-center gap-1 w-fit">
-        <span class="font-bold text-xl">{consumption.user.name}</span>
-        &middot;
-        <span class="text-sm text-slate-600">{consumption.volume_cl}cl {consumption.name} ({consumption.abv}%)</span>
-      </div>
-      <.rel_time time={consumption.inserted_at} class="self-end ml-auto my-auto" />
-    </div>
-    <p>{consumption.caption}</p>
-  </article>
+    consumption={consumption}
+  />
 </div>
 
 <.modal
   :if={@live_action in [:new, :edit]}
   id="consumption-modal"
   show
-  on_cancel={JS.patch(~p"/")}
+  on_cancel={JS.patch(~p"/feed")}
 >
   <.live_component
     module={PintelierWeb.ConsumptionLive.FormComponent}
@@ -42,6 +27,6 @@
     title={@page_title}
     action={@live_action}
     consumption={@consumption}
-    patch={~p"/"}
+    patch={~p"/feed"}
   />
 </.modal>

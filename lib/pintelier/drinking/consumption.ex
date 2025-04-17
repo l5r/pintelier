@@ -1,4 +1,5 @@
 defmodule Pintelier.Drinking.Consumption do
+  alias Pintelier.Drinking.Consumption
   alias Pintelier.Admin
   use Ecto.Schema
   import Ecto.Changeset
@@ -33,7 +34,6 @@ defmodule Pintelier.Drinking.Consumption do
     |> update_drink()
     |> validate_required([:volume_cl, :name, :abv])
     |> foreign_key_constraint(:drink_id)
-    |> cast_assoc(:group_consumptions, with: &Pintelier.Groups.GroupConsumption.changeset/2)
   end
 
   def image_changeset(consumption, attrs) do

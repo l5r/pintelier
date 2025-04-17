@@ -1,5 +1,6 @@
 defmodule PintelierWeb.GroupLive.Show do
   use PintelierWeb, :live_view
+  import PintelierWeb.ConsumptionComponent
 
   alias Pintelier.Groups
 
@@ -13,7 +14,7 @@ defmodule PintelierWeb.GroupLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:group, Groups.get_group!(id))}
+     |> assign(:group, Groups.get_group_with_consumptions!(id))}
   end
 
   defp page_title(:show), do: "Show Group"

@@ -58,18 +58,15 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
           <.input field={@form[:abv]} type="number" label="Abv" step="0.1" class="w-10" />
         </div>
 
-        <.input
-          field={@form[:is_public]}
-          type="checkbox"
-          label="Make public?"
-        />
+        <.input field={@form[:is_public]} type="checkbox" label="Make public?" />
 
         <.input
-          field={@form[:group_consumptions]}
+          field={@form[:groups]}
           type="select"
           label="Groups"
           multiple={true}
           options={@group_options}
+          value={@selected_groups}
         />
 
         <div class="bg-gray-100 p-4 rounded-lg" phx-drop-target={@uploads.image.ref}>
@@ -136,6 +133,10 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
      end)
      |> assign_new(:group_options, fn ->
        Groups.list_groups(%{id: consumption.user_id})
+       |> Enum.map(fn %{id: id, name: name} -> {name, id} end)
+     end)
+     |> assign_new(:selected_groups, fn  -> 
+       consumption.group_consumptions |> Enum.map(&(&1.group_id))
      end)
      |> assign_new(:form, fn ->
        to_form(Drinking.change_consumption(consumption))
@@ -181,6 +182,11 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
 
     case save_result do
       {:ok, consumption} ->
+        Groups.update_consumption_groups(
+          consumption,
+          Phoenix.HTML.Form.input_value(socket.assigns.form, :groups)
+        )
+
         notify_parent({:saved, consumption})
 
         {:noreply,

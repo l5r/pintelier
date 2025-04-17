@@ -4,6 +4,7 @@ defmodule Pintelier.Groups do
   """
 
   import Ecto.Query, warn: false
+  alias Pintelier.Groups.GroupConsumption
   alias Pintelier.Groups.GroupMember
   alias Pintelier.Repo
 
@@ -45,6 +46,11 @@ defmodule Pintelier.Groups do
     Group
     |> Repo.get!(id)
     |> Repo.preload(group_members: [:user])
+  end
+
+  def get_group_with_consumptions!(id) do
+    from(g in Group, preload: [consumptions: [:user]])
+    |> Repo.get!(id)
   end
 
   @doc """
@@ -310,5 +316,20 @@ defmodule Pintelier.Groups do
 
   def accept_invitation(user, invitation) do
     add_user_to_group(user, invitation.group)
+  end
+
+  def update_consumption_groups(consumption, group_ids) do
+    group_consumptions =
+      Enum.map(group_ids, &%{consumption_id: consumption.id, group_id: &1})
+
+    Repo.insert_all(GroupConsumption, group_consumptions, on_conflict: :nothing)
+
+    Repo.delete_all(
+      from gc in GroupConsumption,
+        where: gc.consumption_id == ^consumption.id,
+        where: gc.group_id not in ^group_ids
+    )
+
+    :ok
   end
 end

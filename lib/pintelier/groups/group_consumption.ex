@@ -6,10 +6,8 @@ defmodule Pintelier.Groups.GroupConsumption do
   @foreign_key_type :binary_id
   schema "group_consumptions" do
 
-    field :group, :binary_id
-    field :consumption, :binary_id
-
-    timestamps(type: :utc_datetime)
+    field :group_id, :binary_id
+    field :consumption_id, :binary_id
   end
 
   @doc false

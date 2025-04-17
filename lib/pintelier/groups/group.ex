@@ -18,7 +18,6 @@ defmodule Pintelier.Groups.Group do
 
   @doc false
   def changeset(group, attrs) do
-    # IO.inspect(attrs)
     group
     |> cast(attrs, [:name])
     |> validate_required([:name])

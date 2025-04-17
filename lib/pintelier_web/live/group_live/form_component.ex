@@ -43,7 +43,6 @@ defmodule PintelierWeb.GroupLive.FormComponent do
 
   @impl true
   def update(%{group: group} = assigns, socket) do
-    IO.inspect(socket.assigns, label: :update)
     {:ok,
      socket
      |> assign(assigns)

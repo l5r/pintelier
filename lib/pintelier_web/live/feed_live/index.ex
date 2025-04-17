@@ -1,5 +1,6 @@
 defmodule PintelierWeb.FeedLive.Index do
   use PintelierWeb, :live_view
+  import PintelierWeb.ConsumptionComponent
 
   alias Pintelier.Drinking
   alias Pintelier.Drinking.Consumption
@@ -25,7 +26,7 @@ defmodule PintelierWeb.FeedLive.Index do
       %{id: user_id} ->
         socket
         |> assign(:page_title, "New Consumption")
-        |> assign(:consumption, %Consumption{user_id: user_id, drink: nil, group_consumptions: []})
+        |> assign(:consumption, %Consumption{user_id: user_id, drink: nil, group_consumptions: [], groups: []})
 
       _ ->
         socket
