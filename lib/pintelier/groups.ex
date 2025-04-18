@@ -4,6 +4,7 @@ defmodule Pintelier.Groups do
   """
 
   import Ecto.Query, warn: false
+  alias Pintelier.Drinking.Consumption
   alias Pintelier.Groups.GroupConsumption
   alias Pintelier.Groups.GroupMember
   alias Pintelier.Repo
@@ -50,7 +51,9 @@ defmodule Pintelier.Groups do
   end
 
   def get_group_with_consumptions!(id) do
-    from(g in Group, preload: [consumptions: [:user]])
+    consumptions_query = from c in Consumption, order_by: [desc: c.inserted_at]
+
+    from(g in Group, preload: [consumptions: ^{consumptions_query, [:user]}])
     |> Repo.get!(id)
   end
 
