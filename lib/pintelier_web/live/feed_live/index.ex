@@ -7,7 +7,13 @@ defmodule PintelierWeb.FeedLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :consumptions, Drinking.list_global_consumptions())}
+    current_user = socket.assigns.current_user
+
+    if current_user do
+      {:ok, stream(socket, :consumptions, Drinking.list_feed_consumptions(current_user))}
+    else
+      {:ok, stream(socket, :consumptions, Drinking.list_global_consumptions())}
+    end
   end
 
   @impl true
@@ -22,16 +28,14 @@ defmodule PintelierWeb.FeedLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    case socket.assigns.current_user do
-      %{id: user_id} ->
-        socket
-        |> assign(:page_title, "New Consumption")
-        |> assign(:consumption, %Consumption{user_id: user_id, drink: nil, group_consumptions: [], groups: []})
-
-      _ ->
-        socket
-        |> put_flash(:info, "You need to have an account to use this button.")
-        |> redirect(to: ~p"/users/log_in")
+    if socket.assigns.current_user do
+      socket
+      |> assign(:page_title, "New Consumption")
+      |> assign(:consumption, Drinking.new_consumption(socket.assigns.current_user))
+    else
+      socket
+      |> put_flash(:info, "You need to have an account to use this button.")
+      |> redirect(to: ~p"/users/log_in")
     end
   end
 

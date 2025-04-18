@@ -4,6 +4,7 @@ defmodule Pintelier.Drinking do
   """
 
   import Ecto.Query, warn: false
+  alias Pintelier.Groups
   alias Pintelier.Drinking
   alias Pintelier.Drinking.ConsumptionSession
   alias Pintelier.Repo
@@ -38,6 +39,34 @@ defmodule Pintelier.Drinking do
     )
   end
 
+  def list_feed_consumptions(user) do
+    public_consumptions =
+      from c in Consumption,
+        where: c.is_public == true
+
+    user_consumptions =
+      from c in Consumption,
+        where: c.user_id == ^user.id
+
+    group_consumptions =
+      from c in Consumption,
+        join: g in assoc(c, :groups),
+        join: gm in assoc(g, :group_members),
+        where: gm.user_id == ^user.id
+
+    union_query =
+      group_consumptions
+      |> union(^public_consumptions)
+      |> union(^user_consumptions)
+
+    Repo.all(
+      from c in subquery(union_query),
+        order_by: [desc: c.inserted_at],
+        limit: 20,
+        preload: [:user]
+    )
+  end
+
   @doc """
   Gets a single consumption.
 
@@ -52,10 +81,31 @@ defmodule Pintelier.Drinking do
       ** (Ecto.NoResultsError)
 
   """
-  def get_consumption!(id), do: Repo.get!(from(c in Consumption, preload: [:user, :group_consumptions, :groups]), id)
+  def get_consumption!(id),
+    do: Repo.get!(from(c in Consumption, preload: [:user, :group_consumptions, :groups]), id)
 
   def get_user_consumption!(user, id),
-    do: Repo.get!(from(c in Consumption, where: c.user_id == ^user.id, preload: [:user, :group_consumptions, :groups]), id)
+    do:
+      Repo.get!(
+        from(c in Consumption,
+          where: c.user_id == ^user.id,
+          preload: [:user, :group_consumptions, :groups]
+        ),
+        id
+      )
+
+  def new_consumption(%{id: user_id} = user) do
+    groups = Groups.list_groups(user)
+
+    %Consumption{
+      user_id: user_id,
+      drink: nil,
+      groups: groups,
+      group_consumptions: Enum.map(groups, &%Groups.GroupConsumption{
+        group_id: &1.id
+      })
+    }
+  end
 
   @doc """
   Creates a consumption.

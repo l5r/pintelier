@@ -135,8 +135,8 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
        Groups.list_groups(%{id: consumption.user_id})
        |> Enum.map(fn %{id: id, name: name} -> {name, id} end)
      end)
-     |> assign_new(:selected_groups, fn  -> 
-       consumption.group_consumptions |> Enum.map(&(&1.group_id))
+     |> assign_new(:selected_groups, fn ->
+       consumption.group_consumptions |> Enum.map(& &1.group_id)
      end)
      |> assign_new(:form, fn ->
        to_form(Drinking.change_consumption(consumption))
@@ -182,10 +182,11 @@ defmodule PintelierWeb.ConsumptionLive.FormComponent do
 
     case save_result do
       {:ok, consumption} ->
-        Groups.update_consumption_groups(
-          consumption,
+        group_ids =
           Phoenix.HTML.Form.input_value(socket.assigns.form, :groups)
-        )
+          |> Groups.filter_group_ids(socket.assigns.current_user)
+
+        Groups.update_consumption_groups(consumption, group_ids)
 
         notify_parent({:saved, consumption})
 

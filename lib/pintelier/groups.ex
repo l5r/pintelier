@@ -22,8 +22,9 @@ defmodule Pintelier.Groups do
   def list_groups(user) do
     groups =
       from g in Group,
-        join: u in assoc(g, :members),
-        where: u.id == ^user.id
+        preload: [:group_members],
+        join: gm in assoc(g, :group_members),
+        where: gm.user_id == ^user.id
 
     Repo.all(groups)
   end
@@ -122,6 +123,19 @@ defmodule Pintelier.Groups do
   """
   def change_group(%Group{} = group, attrs \\ %{}) do
     Group.changeset(group, attrs)
+  end
+
+  def can_edit_group?(user, group) do
+    is_admin_in_group?(user, group)
+  end
+
+  def can_delete_group?(user, group), do: is_admin_in_group?(user, group)
+
+  def is_admin_in_group?(%{id: user_id} = _user, group) do
+    Enum.any?(
+      group.group_members,
+      &match?(%GroupMember{authorization: :admin, user_id: ^user_id}, &1)
+    )
   end
 
   alias Pintelier.Groups.GroupMember
@@ -318,7 +332,17 @@ defmodule Pintelier.Groups do
     add_user_to_group(user, invitation.group)
   end
 
+  def filter_group_ids(group_ids, user) do
+    Repo.all(
+      from gm in GroupMember,
+        where: gm.group_id in ^group_ids,
+        where: gm.user_id == ^user.id,
+        select: gm.group_id
+    )
+  end
+
   def update_consumption_groups(consumption, group_ids) do
+    # TODO: put in a transaction
     group_consumptions =
       Enum.map(group_ids, &%{consumption_id: consumption.id, group_id: &1})
 

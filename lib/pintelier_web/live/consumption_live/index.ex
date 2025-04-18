@@ -1,4 +1,5 @@
 defmodule PintelierWeb.ConsumptionLive.Index do
+  alias Pintelier.Groups.GroupConsumption
   alias Pintelier.Groups
   use PintelierWeb, :live_view
 
@@ -27,16 +28,9 @@ defmodule PintelierWeb.ConsumptionLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    user_id = socket.assigns.current_user.id
-
     socket
     |> assign(:page_title, "New Consumption")
-    |> assign(:consumption, %Consumption{
-      user_id: user_id,
-      drink: nil,
-      groups: Groups.list_groups(%{id: user_id}),
-      group_consumptions: []
-    })
+    |> assign(:consumption, Drinking.new_consumption(socket.assigns.current_user))
   end
 
   defp apply_action(socket, :index, _params) do
