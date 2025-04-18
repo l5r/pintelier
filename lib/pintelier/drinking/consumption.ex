@@ -30,9 +30,9 @@ defmodule Pintelier.Drinking.Consumption do
   @doc false
   def changeset(consumption, attrs) do
     consumption
-    |> cast(attrs, [:volume_cl, :drink_id, :name, :abv, :caption])
+    |> cast(attrs, [:volume_cl, :drink_id, :name, :abv, :caption, :is_public])
     |> update_drink()
-    |> validate_required([:volume_cl, :name, :abv])
+    |> validate_required([:volume_cl, :name, :abv, :is_public])
     |> foreign_key_constraint(:drink_id)
   end
 
