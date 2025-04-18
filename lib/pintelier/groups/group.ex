@@ -10,7 +10,12 @@ defmodule Pintelier.Groups.Group do
     has_many :group_members, Pintelier.Groups.GroupMember
     has_many :invitations, Pintelier.Groups.Invitation
 
-    many_to_many :members, Pintelier.Accounts.User, join_through: "group_members", on_replace: :delete
+    many_to_many :members, Pintelier.Accounts.User,
+      join_through: Pintelier.Groups.GroupMember,
+      on_replace: :delete,
+      unique: true,
+      join_defaults: [authorization: :member]
+
     many_to_many :consumptions, Pintelier.Drinking.Consumption, join_through: "group_consumptions"
 
     timestamps(type: :utc_datetime)

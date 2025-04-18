@@ -48,7 +48,16 @@ defmodule PintelierWeb.Admin.ConsumptionLive do
       volume_cl: %{
         module: Backpex.Fields.Number,
         label: "Volume (cl)"
-      }
+      },
+
+  	  groups: %{
+  	    module: Backpex.Fields.HasMany,
+  	    label: "Groups",
+  	    only: ~w{show edit}a,
+  	    display_field: :name,
+  	    display_field_form: :name,
+  	    live_resource: PintelierWeb.Admin.GroupLive,
+  	  },
     ]
   end
 

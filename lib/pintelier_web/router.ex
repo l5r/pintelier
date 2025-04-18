@@ -64,6 +64,7 @@ defmodule PintelierWeb.Router do
     live_session :require_admin_user,
       on_mount: [{PintelierWeb.UserAuth, :ensure_admin_user}, Backpex.InitAssigns] do
       live_resources("/drinks", Admin.DrinkLive)
+      live_resources("/groups", Admin.GroupLive)
       live_resources("/users", Admin.UserLive)
       live_resources("/consumptions", Admin.ConsumptionLive)
       live_resources("/consumption_sessions", Admin.ConsumptionSessionLive)
