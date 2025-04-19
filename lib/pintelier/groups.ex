@@ -53,8 +53,25 @@ defmodule Pintelier.Groups do
   def get_group_with_consumptions!(id) do
     consumptions_query = from c in Consumption, order_by: [desc: c.inserted_at]
 
-    from(g in Group, preload: [consumptions: ^{consumptions_query, [:user]}])
+    from(g in Group, preload: [consumptions: ^{consumptions_query, [:user]}, group_members: [:user]])
     |> Repo.get!(id)
+  end
+
+  def get_group_stats!(id) do
+    yesterday = DateTime.utc_now() |> DateTime.add(-100, :day)
+
+    stats_query =
+      from c in Consumption,
+        join: gc in assoc(c, :group_consumptions),
+        where: gc.group_id == ^id,
+        where: c.inserted_at > ^yesterday,
+        select: %{
+          total_consumptions: count(),
+          total_volume_cl: sum(c.volume_cl),
+          total_alcohol_cl: sum(c.abv / 100 * c.volume_cl)
+        }
+
+    Repo.one!(stats_query)
   end
 
   @doc """

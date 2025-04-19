@@ -565,10 +565,10 @@ defmodule PintelierWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-zinc-500">{item.title}</dt>
+    <div class="mt-4">
+      <dl class="divide-y divide-zinc-100 grid grid-cols-[minmax(min-content,_max-content)_1fr] gap-x-4">
+        <div :for={item <- @item} class="text-sm leading-6 py-4 col-span-2 grid grid-cols-[subgrid]">
+          <dt class="text-zinc-500">{item.title}</dt>
           <dd class="text-zinc-700">{render_slot(item)}</dd>
         </div>
       </dl>

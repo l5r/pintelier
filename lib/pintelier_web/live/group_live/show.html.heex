@@ -1,22 +1,35 @@
 <.header>
-  Group '{@group.name}'
+  {@group.name}
   <:actions>
-    <.link patch={~p"/groups/#{@group}/edit"} phx-click={JS.push_focus()}>
+    <.link :if={Pintelier.Groups.can_edit_group?(@current_user, @group)} patch={~p"/groups/#{@group}/edit"} phx-click={JS.push_focus()}>
       <.button>Edit group</.button>
     </.link>
   </:actions>
 </.header>
 
+<details class="rounded border px-6 pt-2 mt-8">
+  <summary class="text-lg ms-2 mb-2">
+    Last 24h stats
+  </summary>
+  <.list>
+    <:item title="Total consumptions">{@stats.total_consumptions}</:item>
+    <:item title="Total volume">{@stats.total_volume_cl || 0}cl</:item>
+    <:item title="Total alcohol volume">{(@stats.total_alcohol_cl || 0) |> Decimal.round(1)}cl</:item>
+  </.list>
+</details>
+
 <div class="mt-16 flex flex-col gap-8 items-center">
-  <.consumption_card
-    :for={consumption <- @group.consumptions}
-    consumption={consumption}
-  />
+  <.consumption_card :for={consumption <- @group.consumptions} consumption={consumption} />
 </div>
 
 <.back navigate={~p"/groups"}>Back to groups</.back>
 
-<.modal :if={@live_action == :edit} id="group-modal" show on_cancel={JS.patch(~p"/groups/#{@group}")}>
+<.modal
+  :if={@live_action == :edit}
+  id="group-modal"
+  show
+  on_cancel={JS.patch(~p"/groups/#{@group}")}
+>
   <.live_component
     module={PintelierWeb.GroupLive.FormComponent}
     id={@group.id}
