@@ -58,7 +58,7 @@ defmodule Pintelier.Groups do
   end
 
   def get_group_stats!(id) do
-    yesterday = DateTime.utc_now() |> DateTime.add(-100, :day)
+    yesterday = DateTime.utc_now() |> DateTime.add(-1, :day)
 
     stats_query =
       from c in Consumption,
